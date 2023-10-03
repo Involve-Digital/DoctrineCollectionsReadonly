@@ -279,8 +279,8 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	/**
 	 * {@inheritdoc}
 	 */
-	public function count()
-	{
+	public function count(): int
+    {
 		return $this->inner->count();
 	}
 
