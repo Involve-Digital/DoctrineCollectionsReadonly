@@ -14,15 +14,16 @@ use Closure;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Traversable;
 
 /**
  * Read-only collection wrapper.
  * Prohibits any write/modify operations, but allows all non-modifying.
  */
-class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collection, \Doctrine\Common\Collections\Selectable
+class ReadOnlyCollectionWrapper implements Collection, Selectable
 {
 
-	/** @var \Doctrine\Common\Collections\Collection */
+	/** @var Collection */
 	private $inner;
 
 	public function __construct(Collection $collection)
@@ -33,21 +34,21 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function add($element)
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('add an element to');
+		throw ReadOnlyCollectionException::invalidAccess('add an element to');
 	}
 
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function clear()
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('clear');
+		throw ReadOnlyCollectionException::invalidAccess('clear');
 	}
 
 	/**
@@ -69,21 +70,21 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function remove($key)
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('remove an element from');
+		throw ReadOnlyCollectionException::invalidAccess('remove an element from');
 	}
 
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function removeElement($element)
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('remove an element from');
+		throw ReadOnlyCollectionException::invalidAccess('remove an element from');
 	}
 
 	/**
@@ -121,11 +122,11 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function set($key, $value)
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('set an element in');
+		throw ReadOnlyCollectionException::invalidAccess('set an element in');
 	}
 
 	/**
@@ -235,45 +236,45 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIterator()
-	{
+	public function getIterator(): Traversable
+    {
 		return $this->inner->getIterator();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetExists($offset)
-	{
+	public function offsetExists($offset): bool
+    {
 		return $this->inner->offsetExists($offset);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetGet($offset)
-	{
+	public function offsetGet($offset): mixed
+    {
 		return $this->inner->offsetGet($offset);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
-	public function offsetSet($offset, $value)
-	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('set an element in');
+	public function offsetSet($offset, $value): void
+    {
+		throw ReadOnlyCollectionException::invalidAccess('set an element in');
 	}
 
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException
+	 * @throws ReadOnlyCollectionException
 	 */
 	public function offsetUnset($offset)
 	{
-		throw \Kdyby\Doctrine\Collections\Readonly\ReadOnlyCollectionException::invalidAccess('remove an element from');
+		throw ReadOnlyCollectionException::invalidAccess('remove an element from');
 	}
 
 	/**
@@ -290,7 +291,7 @@ class ReadOnlyCollectionWrapper implements \Doctrine\Common\Collections\Collecti
 	public function matching(Criteria $criteria)
 	{
 		if (!$this->inner instanceof Selectable) {
-			throw new \Kdyby\Doctrine\Collections\Readonly\NotSupportedException(sprintf(
+			throw new NotSupportedException(sprintf(
 				'Collection %s does not implement %s, so you cannot call ->matching() over it.',
 				Selectable::class,
 				get_class($this->inner)
