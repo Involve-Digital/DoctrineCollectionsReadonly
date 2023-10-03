@@ -272,8 +272,8 @@ class ReadOnlyCollectionWrapper implements Collection, Selectable
 	 *
 	 * @throws ReadOnlyCollectionException
 	 */
-	public function offsetUnset($offset)
-	{
+	public function offsetUnset($offset): void
+    {
 		throw ReadOnlyCollectionException::invalidAccess('remove an element from');
 	}
 
